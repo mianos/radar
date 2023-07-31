@@ -1664,7 +1664,7 @@
                   {
                     "nid": -630204041,
                     "strtype": "LABEL/Text",
-                    "strval": "Cq",
+                    "strval": "",
                     "InheritedType": 10
                   },
                   {
@@ -1682,7 +1682,8 @@
                     "InheritedType": 2
                   }
                 ],
-                "saved_objtypeKey": "LABEL"
+                "saved_objtypeKey": "LABEL",
+                "tree_closed": true
               }
             ],
             "locked": false,
@@ -2321,7 +2322,7 @@
                 "flags": 17,
                 "strtype": "OBJECT/Position",
                 "intarray": [
-                  -43,
+                  -40,
                   -24
                 ],
                 "InheritedType": 7
@@ -2331,8 +2332,8 @@
                 "flags": 17,
                 "strtype": "OBJECT/Size",
                 "intarray": [
-                  145,
-                  15
+                  150,
+                  20
                 ],
                 "InheritedType": 7
               },
@@ -2502,7 +2503,7 @@
                 "strtype": "BAR/Range",
                 "intarray": [
                   0,
-                  50
+                  300
                 ],
                 "InheritedType": 7
               },
@@ -2550,7 +2551,7 @@
               {
                 "nid": 694236657,
                 "strtype": "OBJECT/Name",
-                "strval": "MPower",
+                "strval": "MEnergy",
                 "InheritedType": 10
               },
               {
@@ -2840,7 +2841,7 @@
                 "flags": 17,
                 "strtype": "OBJECT/Position",
                 "intarray": [
-                  -42,
+                  -40,
                   3
                 ],
                 "InheritedType": 7
@@ -2851,7 +2852,7 @@
                 "strtype": "OBJECT/Size",
                 "intarray": [
                   150,
-                  15
+                  20
                 ],
                 "InheritedType": 7
               },
@@ -3021,7 +3022,7 @@
                 "strtype": "BAR/Range",
                 "intarray": [
                   0,
-                  50
+                  300
                 ],
                 "InheritedType": 7
               },
@@ -3068,7 +3069,7 @@
               {
                 "nid": 256734048,
                 "strtype": "OBJECT/Name",
-                "strval": "SPower",
+                "strval": "SEnergy",
                 "InheritedType": 10
               },
               {
@@ -3562,7 +3563,7 @@
     "theme_color2": 0,
     "exportFolderPath": "/Users/rfo/wal/ldx/src",
     "projectExportFolderPath": "/Users/rfo/wal/ldx/src",
-    "backup_cnt": 9,
+    "backup_cnt": 23,
     "autosave_cnt": 0,
     "lvgl_version": "8.3.6",
     "callfuncsexport": "CPP_FILE",

@@ -12,7 +12,7 @@
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-static const char *dname = "ldx";
+static const char *dname = "radar";
 static DRow *dr;
 
 
@@ -52,6 +52,7 @@ void handle_mqtt() {
   if (!client.connected()) {
     reconnect();
   }
+  client.loop();
 }
 
 const char *mqtt_server = "mqtt2.mianos.com";
@@ -138,6 +139,9 @@ void callback(char *topic_str, byte *payload, unsigned int length) {
 
 
 void mqtt_send(DRow &dr) {
+  if (!client.connected()) {
+    reconnect();
+  }
   StaticJsonDocument<200> sdoc;
   dr.build_json_data(sdoc);
   String o2;
@@ -148,10 +152,13 @@ void mqtt_send(DRow &dr) {
 
 
 void mqtt_update_presence(bool state) {
+  if (!client.connected()) {
+    reconnect();
+  }
   StaticJsonDocument<200> doc;
   doc["state"] = state;
   doc["time"] = DateTime.toISOString();
-  String status_topic = "tele/" + String(dname) + "/presence";
+  String status_topic = "tele/" + String(dname) + "/objects";
   String output;
   serializeJson(doc, output);
   client.publish(status_topic.c_str(), output.c_str());

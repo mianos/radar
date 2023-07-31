@@ -56,9 +56,9 @@ void loop() {
 	if (millis() - lastUpdate > 100) {
       SetTimes();
       ta_display();
+      handle_mqtt();
 			lastUpdate = millis();
 	}
-  handle_mqtt();
   dr.changed = false;
   dr.presence_changed = false;
   if(radar.isConnected() && millis() - lastReading > 500) {

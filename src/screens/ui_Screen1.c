@@ -67,7 +67,7 @@ lv_obj_set_height( ui_Label4, LV_SIZE_CONTENT);   /// 1
 lv_obj_set_x( ui_Label4, -107 );
 lv_obj_set_y( ui_Label4, 0 );
 lv_obj_set_align( ui_Label4, LV_ALIGN_CENTER );
-lv_label_set_text(ui_Label4,"Cq");
+lv_label_set_text(ui_Label4,"");
 
 ui_messages = lv_textarea_create(ui_Screen1);
 lv_obj_set_width( ui_messages, 248);
@@ -79,10 +79,10 @@ lv_textarea_set_max_length(ui_messages,1000);
 lv_textarea_set_placeholder_text(ui_messages,"Messages");
 
 ui_MDist = lv_bar_create(ui_Screen1);
-lv_bar_set_range(ui_MDist, 0,50);
-lv_obj_set_width( ui_MDist, 145);
-lv_obj_set_height( ui_MDist, 15);
-lv_obj_set_x( ui_MDist, -43 );
+lv_bar_set_range(ui_MDist, 0,300);
+lv_obj_set_width( ui_MDist, 150);
+lv_obj_set_height( ui_MDist, 20);
+lv_obj_set_x( ui_MDist, -40 );
 lv_obj_set_y( ui_MDist, -24 );
 lv_obj_set_align( ui_MDist, LV_ALIGN_CENTER );
 
@@ -94,10 +94,10 @@ lv_obj_set_y( ui_MEnergy, -24 );
 lv_obj_set_align( ui_MEnergy, LV_ALIGN_CENTER );
 
 ui_SDist = lv_bar_create(ui_Screen1);
-lv_bar_set_range(ui_SDist, 0,50);
+lv_bar_set_range(ui_SDist, 0,300);
 lv_obj_set_width( ui_SDist, 150);
-lv_obj_set_height( ui_SDist, 15);
-lv_obj_set_x( ui_SDist, -42 );
+lv_obj_set_height( ui_SDist, 20);
+lv_obj_set_x( ui_SDist, -40 );
 lv_obj_set_y( ui_SDist, 3 );
 lv_obj_set_align( ui_SDist, LV_ALIGN_CENTER );
 

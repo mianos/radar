@@ -47,9 +47,20 @@ void DRow::set_s(uint16_t sd, uint8_t se) {
 
 
 void DRow::build_json_data(StaticJsonDocument<200>& doc) {
-  doc["m_distance"] = moving_distance;
-  doc["m_energy"] = moving_energy;
-  doc["s_distance"] = stationary_distance;
-  doc["s_energy"] = stationary_energy;
+  if (!(moving_distance || moving_energy  || stationary_distance || stationary_energy)) {
+      doc["m_distance"] = 0;
+      doc["m_energy"] = 0;
+      doc["s_distance"] = 0;
+      doc["s_energy"] = 0;
+  } else {
+    if (moving_distance)
+      doc["m_distance"] = moving_distance;
+    if (moving_energy)
+      doc["m_energy"] = moving_energy;
+    if (stationary_distance)
+      doc["s_distance"] = stationary_distance;
+    if (stationary_energy) 
+      doc["s_energy"] = stationary_energy;
+  }
   doc["time"] = DateTime.toISOString();
 }
