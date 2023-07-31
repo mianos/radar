@@ -79,32 +79,32 @@ lv_textarea_set_max_length(ui_messages,1000);
 lv_textarea_set_placeholder_text(ui_messages,"Messages");
 
 ui_MDist = lv_bar_create(ui_Screen1);
-lv_bar_set_range(ui_MDist, 0,300);
-lv_obj_set_width( ui_MDist, 150);
+lv_bar_set_range(ui_MDist, 0,50);
+lv_obj_set_width( ui_MDist, 145);
 lv_obj_set_height( ui_MDist, 15);
-lv_obj_set_x( ui_MDist, -40 );
+lv_obj_set_x( ui_MDist, -43 );
 lv_obj_set_y( ui_MDist, -24 );
 lv_obj_set_align( ui_MDist, LV_ALIGN_CENTER );
 
 ui_MEnergy = lv_bar_create(ui_Screen1);
-lv_obj_set_width( ui_MEnergy, 60);
+lv_obj_set_width( ui_MEnergy, 62);
 lv_obj_set_height( ui_MEnergy, 15);
-lv_obj_set_x( ui_MEnergy, 78 );
+lv_obj_set_x( ui_MEnergy, 80 );
 lv_obj_set_y( ui_MEnergy, -24 );
 lv_obj_set_align( ui_MEnergy, LV_ALIGN_CENTER );
 
 ui_SDist = lv_bar_create(ui_Screen1);
-lv_bar_set_range(ui_SDist, 0,300);
+lv_bar_set_range(ui_SDist, 0,50);
 lv_obj_set_width( ui_SDist, 150);
 lv_obj_set_height( ui_SDist, 15);
-lv_obj_set_x( ui_SDist, -40 );
+lv_obj_set_x( ui_SDist, -42 );
 lv_obj_set_y( ui_SDist, 3 );
 lv_obj_set_align( ui_SDist, LV_ALIGN_CENTER );
 
 ui_SEnergy = lv_bar_create(ui_Screen1);
-lv_obj_set_width( ui_SEnergy, 60);
+lv_obj_set_width( ui_SEnergy, 63);
 lv_obj_set_height( ui_SEnergy, 15);
-lv_obj_set_x( ui_SEnergy, 78 );
+lv_obj_set_x( ui_SEnergy, 80 );
 lv_obj_set_y( ui_SEnergy, 3 );
 lv_obj_set_align( ui_SEnergy, LV_ALIGN_CENTER );
 

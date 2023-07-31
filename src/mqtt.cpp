@@ -7,11 +7,13 @@
 
 #include "panel.h"
 #include "ui.h"
+#include "drow.h"
 
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-const char *dname = "ldx";
+static const char *dname = "ldx";
+static DRow *dr;
 
 
 void reconnect() {
@@ -134,8 +136,28 @@ void callback(char *topic_str, byte *payload, unsigned int length) {
   }
 }
 
+
+void mqtt_send(DRow &dr) {
+  StaticJsonDocument<200> sdoc;
+  dr.build_json_data(sdoc);
+  String o2;
+  serializeJson(sdoc, o2);
+  String t2 = String("tele/") + dname + "/radar";
+  client.publish(t2.c_str(), o2.c_str());
+}
+
+
+void mqtt_update_presence(bool state) {
+  StaticJsonDocument<200> doc;
+  doc["state"] = state;
+  doc["time"] = DateTime.toISOString();
+  String status_topic = "tele/" + String(dname) + "/presence";
+  String output;
+  serializeJson(doc, output);
+  client.publish(status_topic.c_str(), output.c_str());
+}
+
 void mqtt_init() {
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
 }
-
