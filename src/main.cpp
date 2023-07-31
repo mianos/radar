@@ -1,60 +1,26 @@
 #include <Arduino.h>
 #include <ESPDateTime.h>
-#include <Wire.h>
-#include <DallasTemperature.h>
 
+#include <ld2410.h>
 #include <lvgl.h>
 
 #include "ui.h"
 #include "panel.h"
 #include "lwifi.h"
-#include "tempsensor.h"
-#include "dallastemp.h"
-#include "pt100temp.h"
-#include "drow.hpp"
-#include "mqtt.hpp"
-#include "cservo.hpp"
-#include "pid.hpp"
+#include "mqtt.h"
 
 
-#define ONE_WIRE_BUS GPIO_NUM_13
-OneWire oneWire_g(ONE_WIRE_BUS);
-DallasTemperature sensors(&oneWire_g);
+ld2410 radar;
+static const int8_t RxPin = 25;
+static const int8_t TxPin = 26;
 
-
-static const int max_temp_count = 2;
-TempSensor **temp_sensors;
-int temp_sensor_count;
-DRow **drows;
-PLoop *pid;
-
-int init_temp_sensors() {
-  DeviceAddress dummyAddr;
-  oneWire_g.search(dummyAddr);
-  oneWire_g.reset_search();
-
-  sensors.begin();
-  auto dallas_count = sensors.getDeviceCount();
-
-  temp_sensors = new TempSensor *[max_temp_count];
-  for (auto tx = 0; tx < dallas_count; tx++) {
-    if (temp_sensor_count > max_temp_count) {
-      ta("max sensor count exceeded");
-      return temp_sensor_count - 1;
-    }
-    temp_sensors[temp_sensor_count++] = new DallasTemp(sensors, tx);
+void init_radar() {
+  Serial1.begin(256000, SERIAL_8N1, RxPin, TxPin); //UART for monitoring the radar
+  if(radar.begin(Serial1)) {
+    taf("radar OK");
+  } else {
+    taf("Radar not connected");
   }
-  if (temp_sensor_count > max_temp_count) {
-    ta("max sensor count exceeded");
-    return temp_sensor_count - 1;
-  }
-  temp_sensors[temp_sensor_count++] = new PT100Temp();
-
-  drows = new DRow *[temp_sensor_count];
-  for (auto ii = 0; ii < temp_sensor_count; ii++) {
-    drows[ii] = new DRow();
-  }
-  return temp_sensor_count;
 }
 
 void setup()
@@ -64,10 +30,7 @@ void setup()
   DateTime.setTimeZone("AEST-10AEDT,M10.1.0,M4.1.0/3");
   tzset();
   wifi_connect();
-  auto sensor_count = init_temp_sensors();
-  pid = new PLoop();
-  mqtt_init(sensor_count, pid);
-  servo_init((int)pid->output);
+  init_radar();
 }
 
 void SetTimes() {
@@ -81,68 +44,46 @@ void SetTimes() {
 }
 
 static unsigned long lastUpdate;
-static unsigned int lcount;
-
-void display() {
-    char temp_b[10];
-    char diff_b[10];
-    char time_at_temp_b[10];
-
-    for (auto snum = 0; snum < temp_sensor_count; snum++) {
-      if (!drows[snum]->isValid()) {
-        continue;
-      }
-#if 0
-      Serial.printf("change sensor %d temp %.2f diff %+.2f\n", 
-          snum,
-          drows[snum]->temp,
-          drows[snum]->diff);
-#endif
-      sprintf(temp_b, "%.2f", drows[snum]->temp);
-      sprintf(diff_b, "%+.2f", drows[snum]->diff);
-      sprintf(time_at_temp_b, "%lu", drows[snum]->time_at_this_temp);
-      switch (snum) {
-      case 0:
-        lv_label_set_text(ui_btemp, temp_b);
-        lv_label_set_text(ui_bdiff, diff_b);
-        lv_label_set_text(ui_btime, time_at_temp_b);
-        break;
-      case 1:
-        lv_label_set_text(ui_rtemp, temp_b);
-        lv_label_set_text(ui_rdiff, diff_b);
-        lv_label_set_text(ui_rtime, time_at_temp_b);
-        break;
-      }
-    }
-}
+static uint32_t lastReading = 0;
 
 void loop() {
 	if (millis() - lastUpdate > 100) {
       SetTimes();
-
-      auto changes = false;
-      for (auto snum = 0; snum < temp_sensor_count; snum++) {
-        if (!(lcount & 1)) {
-          temp_sensors[snum]->requestTemp();
-        } else {
-          changes = drows[snum]->Update(temp_sensors[snum]->temp(), snum);
-          display();
-        }
-      }
-      handle_mqtt(drows, temp_sensor_count);
-      if (drows[R_MOTOR]->isValid()) {
-        auto new_speed = (int)pid->handle(drows[1]->temp);
-        send_pid_info();
-        if (set_speed(R_MOTOR, new_speed))
-          publish_speed_change(R_MOTOR, new_speed);
-      }
-      for (auto snum = 0; snum < temp_sensor_count; snum++) {
-         drows[snum]->ResetChanged();
-      }
-      lcount++;
       ta_display();
 			lastUpdate = millis();
 	}
+  if(radar.isConnected() && millis() - lastReading > 1000) {
+    lastReading = millis();
+    if(radar.presenceDetected())
+    {
+      if(radar.stationaryTargetDetected())
+      {
+        Serial.print(F("Stationary target: "));
+        Serial.print(radar.stationaryTargetDistance());
+        Serial.print(F("cm energy:"));
+        Serial.println(radar.stationaryTargetEnergy());
+        lv_bar_set_value(ui_SDist, radar.stationaryTargetDistance(), LV_ANIM_ON);
+        lv_bar_set_value(ui_SEnergy, radar.stationaryTargetEnergy(), LV_ANIM_ON);
+      }
+      if(radar.movingTargetDetected())
+      {
+        Serial.print(F("Moving target: "));
+        Serial.print(radar.movingTargetDistance());
+        Serial.print(F("cm energy:"));
+        Serial.println(radar.movingTargetEnergy());
+        lv_bar_set_value(ui_MDist, radar.movingTargetDistance(), LV_ANIM_ON);
+        lv_bar_set_value(ui_MEnergy, radar.movingTargetEnergy(), LV_ANIM_ON);
+      }
+    }
+    else
+    {
+      Serial.println(F("No target"));
+        lv_bar_set_value(ui_SDist, 0, LV_ANIM_ON);
+        lv_bar_set_value(ui_SEnergy, 0, LV_ANIM_ON);
+        lv_bar_set_value(ui_MDist, 0, LV_ANIM_ON);
+        lv_bar_set_value(ui_MEnergy, 0, LV_ANIM_ON);
+    }
+  }
 	lv_task_handler();
 	delay(5);
 }
