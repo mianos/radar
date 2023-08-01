@@ -1,4 +1,4 @@
-#include <Arduino.h>
+// #include <Arduino.h>
 #include <ESPDateTime.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
@@ -146,7 +146,7 @@ void mqtt_send(DRow &dr) {
   dr.build_json_data(sdoc);
   String o2;
   serializeJson(sdoc, o2);
-  String t2 = String("tele/") + dname + "/radar";
+  String t2 = String("tele/") + dname + "/ranges";
   client.publish(t2.c_str(), o2.c_str());
 }
 
@@ -158,7 +158,7 @@ void mqtt_update_presence(bool state) {
   StaticJsonDocument<200> doc;
   doc["state"] = state;
   doc["time"] = DateTime.toISOString();
-  String status_topic = "tele/" + String(dname) + "/objects";
+  String status_topic = "tele/" + String(dname) + "/presence";
   String output;
   serializeJson(doc, output);
   client.publish(status_topic.c_str(), output.c_str());
